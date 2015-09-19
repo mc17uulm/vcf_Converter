@@ -12,6 +12,13 @@ import java.util.List;
 
 /**
  * Created by Marco on 04.09.2015.
+ * This class reads the informations from the specific
+ * files and saves the informations into arrays.
+ *
+ * The methods to read and write the vcf files are form
+ * the ezvcard Package, which is under following license:
+ *
+ * Downloaded here:
  */
 public class readFile {
 
@@ -26,8 +33,20 @@ public class readFile {
     public static boolean readVCF(File file){
 
         try {
+
             BufferedReader br = new BufferedReader(new FileReader(file));
+
+            /**
+             * All the vCars which are maybe in the opened file, will
+             * be saved in a list.
+             */
             List<VCard> vCard = Ezvcard.parse(br).all();
+
+            /**
+             * Informations form these vCards will be divided in the singular informations
+             * in the contactsFormatted array (like name) and the plural informations
+             * in the contactsFormattedList array (like numbers, addresses, etc.).
+             */
             contactsFormattedList = new List[5][vCard.size()];
             contactsFormatted = new String[2][vCard.size()];
 
@@ -41,6 +60,9 @@ public class readFile {
                     List<Telephone> numbers = vCard.get(i).getTelephoneNumbers();
                     List<Email> mails = vCard.get(i).getEmails();
 
+                    /**
+                     * Save each information in a specific array.
+                     */
                     contactsFormatted[0][j] = fullName;
                     contactsFormatted[1][j] = lastName;
                     contactsFormattedList[0][j] = address;
@@ -65,6 +87,10 @@ public class readFile {
         return false;
     }
 
+    /**
+     * Getter for the arrays, with the vCard informations
+     * @return
+     */
     public static List[][] getContactsFormattedList() {
         return contactsFormattedList;
     }
