@@ -8,6 +8,6 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="GUI.About">
   <children>
-    <TextArea fx:id="textAbout" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="272.0" prefWidth="372.0" wrapText="true" />
+    <TextArea fx:id="textAbout" disable="false" editable="false" focusTraversable="true" layoutX="14.0" layoutY="14.0" prefHeight="272.0" prefWidth="372.0" text="vcf to csv Converter 0.1  &#10;&#10;2015 by Marco Combosch &#10;&#10;This program is under Creative Commons License. More Informations under: http://www.github.com/mc17uulm/" visible="true" wrapText="true" />
   </children>
 </AnchorPane>

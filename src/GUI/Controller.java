@@ -106,7 +106,7 @@ public class Controller {
          * This file filter only allows .csv and .vcf files
          */
         FileChooser.ExtensionFilter filter;
-        filter = new FileChooser.ExtensionFilter("Contact Files", "*.vcf", "*.csv");
+        filter = new FileChooser.ExtensionFilter("Contact Files", "*.vcf");
 
         /**
          * Just the normal Open File Dialog
@@ -261,8 +261,6 @@ public class Controller {
         aboutStage.setTitle("VCF Converter 0.1 | About");
         aboutStage.setScene(new Scene(root, 400, 300));
         aboutStage.show();
-        //About.getTextAbout().setText("vcf to csv Converter 0.1 \n\r 2015 by Marco Combosch \n\r This program is under Creative Commons License. More " +
-        //        "Informations under: http://www.github.com/mc17uulm/");
     }
 
     public void saveOptions(){
@@ -279,7 +277,6 @@ public class Controller {
 
         File savedFile = saveOpt.showSaveDialog(saveAsBtn.getScene().getWindow());
         saveCSVFile.saveFile(savedFile);
-        Log.writeLog("File saved under: " + savedFile.getAbsolutePath());
     }
 
     public void saveDirect(){
