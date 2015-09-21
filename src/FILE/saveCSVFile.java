@@ -100,6 +100,7 @@ public class saveCSVFile {
                 } else {
                     alert.setTitle("Fehler! Datei nicht gefunden!");
                     alert.setHeaderText("FEHLER!");
+                    alert.setContentText("Es ist ein Fehler aufgetaucht! Es gibt ein Problem mit der ausgew\u00e4hlten Datei");
                 }
                 successfullWritten = false;
                 Log.writeLog("Error file writting! : " + savedFile.getAbsolutePath());
