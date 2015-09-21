@@ -86,10 +86,10 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <Label layoutX="14.0" layoutY="14.0" text="Informations:" />
+                <Label fx:id="informationField" layoutX="14.0" layoutY="14.0" text="Informations:" />
                 <CheckBox id="nameInformations" fx:id="nameInfo" layoutX="14.0" layoutY="52.0" mnemonicParsing="false" selected="true" text="Name" />
-                <CheckBox fx:id="telephoneInfo" layoutX="176.0" layoutY="52.0" mnemonicParsing="false" selected="true" text="Telephone Numbers" />
-                <CheckBox fx:id="mailInfo" layoutX="14.0" layoutY="91.0" mnemonicParsing="false" text="E-Mail Addresses" />
+                <CheckBox fx:id="telephoneInfo" layoutX="176.0" layoutY="52.0" mnemonicParsing="false" selected="true" text="Telephonenumber(s)" />
+                <CheckBox fx:id="mailInfo" layoutX="14.0" layoutY="91.0" mnemonicParsing="false" text="E-Mail-Address" />
                 <CheckBox fx:id="addressInfo" layoutX="176.0" layoutY="91.0" mnemonicParsing="false" text="Addreses" />
                 <Button fx:id="applyInfo" layoutX="516.0" layoutY="299.0" mnemonicParsing="false" onAction="#changeOptions" text="Apply" />
               </children>

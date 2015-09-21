@@ -17,6 +17,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.*;
+import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -33,6 +35,7 @@ import javafx.util.Callback;
 
 public class Controller {
 
+    @FXML private Label informationField;
     @FXML private CheckBox nameInfo;
     @FXML private CheckBox telephoneInfo;
     @FXML private CheckBox mailInfo;
@@ -65,6 +68,7 @@ public class Controller {
     private static final ObservableList<Record> currentList = FXCollections.observableArrayList();
     private Desktop desktop = Desktop.getDesktop();
     private File inputFile;
+    private static boolean[] options = new boolean[4];
 
     /**
      * 0 = English
@@ -90,6 +94,14 @@ public class Controller {
 
     public static int getLanguage() {
         return language;
+    }
+
+    public static boolean[] getOptions() {
+        return options;
+    }
+
+    public static void setOptions(boolean[] options) {
+        Controller.options = options;
     }
 
     /**
@@ -258,6 +270,11 @@ public class Controller {
     public void about(ActionEvent actionEvent) throws Exception{
         Stage aboutStage = new Stage();
         Parent root = FXMLLoader.load(getClass().getResource("about.fxml"));
+        try {
+            aboutStage.getIcons().add(new javafx.scene.image.Image("file:lib/icon.png"));
+        } catch (IllegalArgumentException iae){
+            iae.printStackTrace();
+        }
         aboutStage.setTitle("VCF Converter 0.1 | About");
         aboutStage.setScene(new Scene(root, 400, 300));
         aboutStage.show();
@@ -303,6 +320,11 @@ public class Controller {
         activeColumn.setText("Active");
         vcfTab.setText("vcf to csv");
         OptionsTab.setText("Options");
+        informationField.setText("Informationes:");
+        telephoneInfo.setText("Telephonnumber(s)");
+        addressInfo.setText("Address");
+        mailInfo.setText("E-Mail-Address");
+        applyInfo.setText("Apply");
         Log.writeLog("Language changed to: English");
     }
 
@@ -327,9 +349,47 @@ public class Controller {
         activeColumn.setText("Auswahl");
         vcfTab.setText("vcf zu csv");
         OptionsTab.setText("Einstellungen");
+        informationField.setText("Informationen:");
+        telephoneInfo.setText("Telefonnummer(n)");
+        addressInfo.setText("Adresse");
+        mailInfo.setText("E-Mail-Adresse");
+        applyInfo.setText("Speichern");
         Log.writeLog("Language changed to: German");
     }
 
     public void changeOptions(ActionEvent actionEvent) {
+        if(nameInfo.isSelected()){
+            options[0] = true;
+        } else {
+            options[0] = false;
+        }
+        if(telephoneInfo.isSelected()){
+            options[1] = true;
+        } else {
+            options[1] = false;
+        }
+        if(mailInfo.isSelected()){
+            options[2] = true;
+        } else {
+            options[2] = false;
+        }
+        if(addressInfo.isSelected()){
+            options[3] = true;
+        } else {
+            options[3] = false;
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:lib/icon.png"));
+        if (Controller.getLanguage() == 0) {
+            alert.setTitle("Options saved!");
+            alert.setHeaderText("Success!");
+            alert.setContentText("All options are saved!");
+        } else {
+            alert.setTitle("Einstellungen gespeichert!");
+            alert.setHeaderText("Erfolg!");
+            alert.setContentText("Alle Einstellungen wurden gespeichert!");
+        }
+        alert.showAndWait();
+        Log.writeLog("Options changed: ");
     }
 }
