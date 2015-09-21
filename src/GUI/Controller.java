@@ -26,63 +26,44 @@ import java.awt.print.Book;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 
 import FILE.*;
 import javafx.util.Callback;
 
 public class Controller {
 
-    public RadioMenuItem germanToggle;
-    public RadioMenuItem englishToggle;
-    public Menu helpMenu;
-    public Menu LanguageMenu;
-    public ToggleGroup Language;
-    public Label vcfFileLabel;
-    public MenuItem deleteMenu;
-    public Menu editMenu;
-    public Menu fileMenu;
-    public Tab vcfTab;
-    public Tab OptionsTab;
-    @FXML
-    private MenuItem aboutMenu;
-
-    @FXML
-    private TableColumn activeColumn;
-
-    @FXML
-    private MenuItem openMenu;
-
-    @FXML
-    private MenuItem saveMenu;
-
-    @FXML
-    private MenuItem saveAsMenu;
-
-    @FXML
-    private MenuItem closeMenu;
-
-    @FXML
-    private TableView<Record> tableView = new TableView<>();
+    @FXML private CheckBox nameInfo;
+    @FXML private CheckBox telephoneInfo;
+    @FXML private CheckBox mailInfo;
+    @FXML private CheckBox addressInfo;
+    @FXML private Button applyInfo;
+    @FXML private RadioMenuItem germanToggle;
+    @FXML private RadioMenuItem englishToggle;
+    @FXML private Menu helpMenu;
+    @FXML private Menu LanguageMenu;
+    @FXML private ToggleGroup Language;
+    @FXML private Label vcfFileLabel;
+    @FXML private MenuItem deleteMenu;
+    @FXML private Menu editMenu;
+    @FXML private Menu fileMenu;
+    @FXML private Tab vcfTab;
+    @FXML private Tab OptionsTab;
+    @FXML private MenuItem aboutMenu;
+    @FXML private TableColumn activeColumn;
+    @FXML private MenuItem openMenu;
+    @FXML private MenuItem saveMenu;
+    @FXML private MenuItem saveAsMenu;
+    @FXML private MenuItem closeMenu;
+    @FXML private TableView<Record> tableView = new TableView<>();
+    @FXML private TableColumn namColumn;
+    @FXML private TableColumn NumberColumn;
+    @FXML private TextField fileField;
+    @FXML private Button openBtn;
+    @FXML private Button saveAsBtn;
 
     private static final ObservableList<Record> currentList = FXCollections.observableArrayList();
-
-    @FXML
-    private TableColumn namColumn;
-
-    @FXML
-    private TableColumn NumberColumn;
-
-    @FXML
-    private TextField fileField;
-
-    @FXML
-    private Button openBtn;
-
-    @FXML
-    private Button saveAsBtn;
-
     private Desktop desktop = Desktop.getDesktop();
-
     private File inputFile;
 
     /**
@@ -117,7 +98,7 @@ public class Controller {
      */
 
 
-    public void fileOpen(){
+    private void fileOpen(){
 
         fileChooser = new FileChooser();
 
@@ -147,6 +128,8 @@ public class Controller {
         fileChooser.getExtensionFilters().add(filter);
 
         inputFile = fileChooser.showOpenDialog(openBtn.getScene().getWindow());
+
+        Log.writeLog("File opened: " + inputFile.getAbsolutePath());
 
         /**
          * The method makeTable, will create the table which is displayed at the
@@ -257,12 +240,19 @@ public class Controller {
         saveOptions();
     }
 
+
     /**
      * Standart: Program gets closed.
      * @param actionEvent
      */
     public void close(ActionEvent actionEvent) {
-        System.exit(0);
+        for(int i = 0; i < 2; i++) {
+            if (i == 0) {
+                Log.closeLog();
+            } else {
+                System.exit(0);
+            }
+        }
     }
 
     public void about(ActionEvent actionEvent) throws Exception{
@@ -289,6 +279,7 @@ public class Controller {
 
         File savedFile = saveOpt.showSaveDialog(saveAsBtn.getScene().getWindow());
         saveCSVFile.saveFile(savedFile);
+        Log.writeLog("File saved under: " + savedFile.getAbsolutePath());
     }
 
     public void saveDirect(){
@@ -315,6 +306,7 @@ public class Controller {
         activeColumn.setText("Active");
         vcfTab.setText("vcf to csv");
         OptionsTab.setText("Options");
+        Log.writeLog("Language changed to: English");
     }
 
     public void german(ActionEvent actionEvent) {
@@ -338,5 +330,9 @@ public class Controller {
         activeColumn.setText("Auswahl");
         vcfTab.setText("vcf zu csv");
         OptionsTab.setText("Einstellungen");
+        Log.writeLog("Language changed to: German");
+    }
+
+    public void changeOptions(ActionEvent actionEvent) {
     }
 }
