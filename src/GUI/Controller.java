@@ -11,6 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -30,6 +32,17 @@ import javafx.util.Callback;
 
 public class Controller {
 
+    public RadioMenuItem germanToggle;
+    public RadioMenuItem englishToggle;
+    public Menu helpMenu;
+    public Menu LanguageMenu;
+    public ToggleGroup Language;
+    public Label vcfFileLabel;
+    public MenuItem deleteMenu;
+    public Menu editMenu;
+    public Menu fileMenu;
+    public Tab vcfTab;
+    public Tab OptionsTab;
     @FXML
     private MenuItem aboutMenu;
 
@@ -73,6 +86,12 @@ public class Controller {
     private File inputFile;
 
     /**
+     * 0 = English
+     * 1 = German
+     */
+    private static int language = 0;
+
+    /**
      * Here the program gets the direction in which the file chooser starts. As default, the
      * file chooser starts at the desktop.
      */
@@ -88,10 +107,16 @@ public class Controller {
         fileOpen();
     }
 
+    public static int getLanguage() {
+        return language;
+    }
+
     /**
      * This method starts the file chooser an get
      * the choosen file.
      */
+
+
     public void fileOpen(){
 
         fileChooser = new FileChooser();
@@ -105,7 +130,11 @@ public class Controller {
         /**
          * Just the normal Open File Dialog
          */
-        fileChooser.setTitle("Open Contact File");
+        if(language == 0){
+            fileChooser.setTitle("Open Contact File");
+        } else{
+            fileChooser.setTitle("Kontaktdatei \u00F6ffnen");
+        }
 
         /**
          * Here we set the initial Directory to the Desktop
@@ -248,7 +277,11 @@ public class Controller {
 
     public void saveOptions(){
         FileChooser saveOpt = new FileChooser();
-        saveOpt.setTitle("Save As ...");
+        if(language == 0) {
+            saveOpt.setTitle("Save As ...");
+        } else{
+            saveOpt.setTitle("Speichern unter ...");
+        }
         saveOpt.setInitialDirectory(dir);
         saveOpt.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Contact Files", "*.csv")
@@ -259,5 +292,51 @@ public class Controller {
     }
 
     public void saveDirect(){
+    }
+
+    public void english(ActionEvent actionEvent) {
+        language = 0;
+        openBtn.setText("Open...");
+        saveAsBtn.setText("Save As .csv");
+        fileMenu.setText("File");
+        openMenu.setText("Open");
+        saveMenu.setText("Save");
+        saveAsMenu.setText("Save As...");
+        closeMenu.setText("Close");
+        editMenu.setText("Edit");
+        deleteMenu.setText("Delete");
+        helpMenu.setText("Help");
+        aboutMenu.setText("About");
+        LanguageMenu.setText("Language");
+        englishToggle.setText("English");
+        germanToggle.setText("German");
+        vcfFileLabel.setText(".vcf File:");
+        NumberColumn.setText("Number");
+        activeColumn.setText("Active");
+        vcfTab.setText("vcf to csv");
+        OptionsTab.setText("Options");
+    }
+
+    public void german(ActionEvent actionEvent) {
+        language = 1;
+        openBtn.setText("\u00D6ffnen...");
+        saveAsBtn.setText("Speichern als .csv");
+        fileMenu.setText("Datei");
+        openMenu.setText("\u00D6ffnen");
+        saveMenu.setText("Speichern");
+        saveAsMenu.setText("Speichern unter...");
+        closeMenu.setText("Schlie\u00DFen");
+        editMenu.setText("Bearbeiten");
+        deleteMenu.setText("L\u00F6schen");
+        helpMenu.setText("Hilfe");
+        aboutMenu.setText("\u00DCber");
+        LanguageMenu.setText("Sprache");
+        englishToggle.setText("Englisch");
+        germanToggle.setText("Deutsch");
+        vcfFileLabel.setText(".vcf Datei:");
+        NumberColumn.setText("Nummer");
+        activeColumn.setText("Auswahl");
+        vcfTab.setText("vcf zu csv");
+        OptionsTab.setText("Einstellungen");
     }
 }

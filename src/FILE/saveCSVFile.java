@@ -1,5 +1,6 @@
 package FILE;
 
+import GUI.Controller;
 import ezvcard.property.Telephone;
 import javafx.scene.control.Alert;
 
@@ -19,8 +20,8 @@ public class saveCSVFile {
      * These Strings define the header of the csv file,
      * the delimiter and the new line seperator.
      */
-    private static final String FILE_HEADER = "NR,NAME,TELEFONNUMMER";
-    private static final String COMMA_DELIMITER = ",";
+    private static final String FILE_HEADER = "NR;NAME;TELEFONNUMMER";
+    private static final String COMMA_DELIMITER = ";";
     private static final String NEW_LINE_SEPERATOR = "\n";
 
     /**
@@ -69,7 +70,6 @@ public class saveCSVFile {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException npe){
-            npe.printStackTrace();
         } finally {
             try {
 
@@ -78,9 +78,15 @@ public class saveCSVFile {
                  * that the file was created successfully.
                  */
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("File saved!");
-                alert.setHeaderText("File saved successfully");
-                alert.setContentText("Saved under: " + savedFile.getAbsolutePath());
+                if(Controller.getLanguage() == 0) {
+                    alert.setTitle("File saved!");
+                    alert.setHeaderText("File saved successfully");
+                    alert.setContentText("Saved under: " + savedFile.getAbsolutePath());
+                } else{
+                    alert.setTitle("Datei gespeichert!");
+                    alert.setHeaderText("Datei erfolgreich gespeichert!");
+                    alert.setContentText("Gespeichert unter: " + savedFile.getAbsolutePath());
+                }
                 alert.showAndWait();
 
                 /**
