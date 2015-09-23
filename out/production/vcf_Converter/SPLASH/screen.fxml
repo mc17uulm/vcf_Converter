@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="SPLASH.MainLoader">
+  <children>
+    <ProgressBar fx:id="progressLoader" layoutX="100.0" layoutY="257.0" prefWidth="200.0" progress="0.0" />
+    <Label layoutX="130.0" layoutY="278.0" text="2015 (C) Marco Combosch" />
+    <Label layoutX="89.0" layoutY="30.0" text="vcf Converter 0.1" textAlignment="CENTER" textFill="#0021cc" underline="false" wrapText="true">
+      <font>
+        <Font name="Lucida Sans Demibold" size="25.0" />
+      </font>
+    </Label>
+    <Label fx:id="statusLabel" layoutX="188.0" layoutY="230.0" text="Start" />
+    <CheckBox fx:id="startBox" layoutX="29.0" layoutY="82.0" mnemonicParsing="false" onAction="#load" selected="false" text="CheckBox" visible="false" />
+  </children>
+</AnchorPane>
