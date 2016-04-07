@@ -1,5 +1,6 @@
 package FILE;
 
+import CONTACT.Contact;
 import GUI.Controller;
 import com.sun.jndi.cosnaming.IiopUrl;
 import ezvcard.property.Address;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by Marco on 19.09.2015.
@@ -37,7 +39,7 @@ public class saveCSVFile {
      * should be written.
      * @param savedFile
      */
-    public static void saveFile(File savedFile){
+    public static void saveFile(File savedFile, Contact[] contacts){
 
         successfullWritten = true;
         FileWriter fileWriter = null;
@@ -68,36 +70,29 @@ public class saveCSVFile {
             fileWriter.append(NEW_LINE_SEPERATOR);
 
             /**
-             * get the informations from the vcf file and save them in
-             * two arrays
-             */
-            String[][] contactsFirst = readFile.getContactsFormatted();
-            java.util.List<Telephone>[][] numbers = readFile.getContactsFormattedList();
-            java.util.List<Address>[][] addresses = readFile.getContactsFormattedList();
-            java.util.List<Email>[][] mail = readFile.getContactsFormattedList();
-
-            /**
              * iterate trough the contacts and create a line for each contact,
              * with the informations: id, name and telephone number
              */
-            for(int i = 0; i < contactsFirst[0].length; i++){
-                if(contactsFirst[0][i].equals(null)){
+
+            for(int i = 0; i < contacts.length; i++){
+                if(contacts[i].equals(null)){
 
                 } else{
                     fileWriter.append(String.valueOf(i+1));
                     fileWriter.append(COMMA_DELIMITER);
 
                     if(Controller.getOptions()[0]) {
-                        fileWriter.append(contactsFirst[0][i]);
+                        fileWriter.append(contacts[i].getFullName());
+                        System.out.println(contacts[i].getFullName());
                         fileWriter.append(COMMA_DELIMITER);
                     }
 
                     if(Controller.getOptions()[2]){
                         try {
-                            if(mail[2][i].get(0).getValue().equals(null)){
+                            if(contacts[i].getEmail(0).equals(null)){
                                 fileWriter.append(COMMA_DELIMITER);
                             } else {
-                                fileWriter.append(mail[2][i].get(0).getValue());
+                                fileWriter.append(contacts[i].getEmail(0));
                                 fileWriter.append(COMMA_DELIMITER);
                             }
                         } catch (IndexOutOfBoundsException we){
@@ -107,10 +102,10 @@ public class saveCSVFile {
 
                     if(Controller.getOptions()[3]) {
                         try {
-                            if (addresses[0][i].get(0).getStreetAddress().equals(null)) {
+                            if (contacts[i].getAddress(0).equals(null)) {
                                 fileWriter.append(COMMA_DELIMITER);
                             } else {
-                                fileWriter.append(addresses[0][i].get(0).getStreetAddress());
+                                fileWriter.append(contacts[i].getAddress(0));
                                 fileWriter.append(COMMA_DELIMITER);
                             }
                         } catch (IndexOutOfBoundsException io) {
@@ -119,8 +114,8 @@ public class saveCSVFile {
                     }
 
                     if(Controller.getOptions()[1]) {
-                        for (int k = 0; k < numbers[1][i].size(); k++) {
-                            fileWriter.append(numbers[1][i].get(k).getText());
+                        for (int k = 0; k < contacts[i].getTelephoneList().size(); k++) {
+                            fileWriter.append(contacts[i].getTelephoneNumber(k));
                             fileWriter.append(COMMA_DELIMITER);
                         }
                         fileWriter.append(NEW_LINE_SEPERATOR);

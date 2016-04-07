@@ -1,5 +1,6 @@
 package GUI;
 
+import CONTACT.Contact;
 import ezvcard.property.Telephone;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -7,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,6 +19,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -28,13 +31,20 @@ import java.awt.print.Book;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.SyncFailedException;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.ResourceBundle;
 
 import FILE.*;
 import javafx.util.Callback;
 
-public class Controller {
+public class Controller implements Initializable{
 
+    @FXML private Button saveBtn;
+    @FXML private Button deleteBtn;
+    @FXML private Button addBtn;
     @FXML private Label informationField;
     @FXML private CheckBox nameInfo;
     @FXML private CheckBox telephoneInfo;
@@ -69,6 +79,7 @@ public class Controller {
     private Desktop desktop = Desktop.getDesktop();
     private File inputFile;
     private static boolean[] options = new boolean[4];
+    private static Contact[] contacts = {};
 
     /**
      * 0 = English
@@ -82,6 +93,13 @@ public class Controller {
      */
     private File dir = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Desktop");
     private FileChooser fileChooser;
+
+    public void initialize(URL fxmlFileLocation, ResourceBundle resources){
+        Log.initalize();
+        Log.writeLog("Program started!");
+        options[0] = true;
+        options[1] = true;
+    }
 
     /**
      * If the user clicks on the open button,
@@ -118,7 +136,7 @@ public class Controller {
          * This file filter only allows .csv and .vcf files
          */
         FileChooser.ExtensionFilter filter;
-        filter = new FileChooser.ExtensionFilter("Contact Files", "*.vcf");
+        filter = new FileChooser.ExtensionFilter("Contact Files", "*.vcf", "*.csv");
 
         /**
          * Just the normal Open File Dialog
@@ -141,16 +159,11 @@ public class Controller {
 
         inputFile = fileChooser.showOpenDialog(openBtn.getScene().getWindow());
 
+        String extension = readFile.getExtension(inputFile);
+
+        System.out.println("Extension: " + extension);
+
         Log.writeLog("File opened: " + inputFile.getAbsolutePath());
-
-        /**
-         * The method makeTable, will create the table which is displayed at the
-         * programm.
-         */
-        makeTable(inputFile);
-    }
-
-    public void makeTable(File inputFile){
 
         /**
          * At first we check if the file is empty, then we work
@@ -168,13 +181,11 @@ public class Controller {
              * we read out the informations from the vcf file
              * and save them in different arrays.
              */
-            readFile.readVCF(inputFile);
+            if(extension.equals(".vcf")) {
+                contacts = readFile.readVCF(inputFile);
+            } else if(extension.equals(".csv")){
 
-            /**
-             * Now we get the arrays which were made with the above method
-             */
-            String[][] contactsFirst = readFile.getContactsFormatted();
-            java.util.List<Telephone>[][] numbers = readFile.getContactsFormattedList();
+            }
 
             /**
              * We reset the currentList. Maybe the user wants to edit more files,
@@ -185,7 +196,7 @@ public class Controller {
             /**
              * With this loop we work trough the contacts
              */
-            for(int i = 0; i < contactsFirst[0].length; i++){
+            for(int i = 0; i < contacts.length; i++){
 
                 /**
                  * Because there could be empty or damaged contacts, so
@@ -202,7 +213,7 @@ public class Controller {
                      * the first number (just to display, in the converted file, there will
                      * be all numbers.
                      */
-                    currentList.add(new Record(contactsFirst[0][i], numbers[1][i].get(0).getText(), true));
+                    currentList.add(new Record(contacts[i].getFullName(), contacts[i].getTelephoneNumber(0), true));
 
 
                 } catch (IndexOutOfBoundsException ioobe){
@@ -216,6 +227,7 @@ public class Controller {
              * This is used to get the columns and to add them the right list.
              */
             namColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldName"));
+            namColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             NumberColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldNumber"));
             activeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Record, Boolean>, ObservableValue<Boolean>>() {
                 @Override
@@ -293,7 +305,7 @@ public class Controller {
         );
 
         File savedFile = saveOpt.showSaveDialog(saveAsBtn.getScene().getWindow());
-        saveCSVFile.saveFile(savedFile);
+        saveCSVFile.saveFile(savedFile, contacts);
     }
 
     public void saveDirect(){
@@ -391,5 +403,44 @@ public class Controller {
         }
         alert.showAndWait();
         Log.writeLog("Options changed: ");
+    }
+
+    public void addContact(ActionEvent actionEvent) {
+
+    }
+
+    public void deleteContact(ActionEvent actionEvent) {
+
+    }
+
+    public void editName(TableColumn.CellEditEvent<Record, String> stCellEditEvent) {
+        saveBtn.setDisable(false);
+        ((Record) stCellEditEvent.getTableView().getItems().get(stCellEditEvent.getTablePosition().getRow())).setFieldName(stCellEditEvent.getNewValue());
+        contacts[stCellEditEvent.getTablePosition().getRow()].changeFullName(stCellEditEvent.getNewValue());
+        System.out.println("Value After: " + stCellEditEvent.getNewValue());
+    }
+
+    public void editNumber(TableColumn.CellEditEvent<Record, String> stCellEditEvent) {
+        saveBtn.setDisable(false);
+        ((Record) stCellEditEvent.getTableView().getItems().get(stCellEditEvent.getTablePosition().getRow())).setFieldName(stCellEditEvent.getNewValue());
+        contacts[stCellEditEvent.getTablePosition().getRow()].changeTelephoneNumber(stCellEditEvent.getNewValue(), 0);
+        System.out.println("Value After: " + stCellEditEvent.getNewValue());
+    }
+
+    public void saveFile(ActionEvent actionEvent) {
+        saveVCFFile.saveFile(inputFile, contacts);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:lib/icon.png"));
+        if (Controller.getLanguage() == 0) {
+            alert.setTitle("File saved!");
+            alert.setHeaderText("Success!");
+            alert.setContentText("Saved under: " + inputFile.getAbsolutePath());
+        } else {
+            alert.setTitle("Datei gespeichert!");
+            alert.setHeaderText("Erfolg!");
+            alert.setContentText("Gespeichert unter: " + inputFile.getAbsolutePath());
+        }
+        alert.showAndWait();
+        saveBtn.setDisable(true);
     }
 }

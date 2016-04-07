@@ -50,12 +50,29 @@ public class Record{
         return fieldName.get();
     }
 
+    public void setFieldName(String fieldName){
+        this.fieldName.set(fieldName);
+        System.out.println("RECORD: " + fieldName);
+    }
+
+    public SimpleStringProperty getFieldNameProperty() { return fieldName; }
+
     public String getFieldNumber() {
         return (String) fieldNumber.getValue();
     }
 
+    public void setFieldNumber(String fieldNumber){
+        this.fieldNumber.set(fieldNumber);
+    }
+
+    public SimpleObjectProperty getFieldNumberProperty(){ return fieldNumber; }
+
     public boolean getRegistered() {
         return registered.get();
+    }
+
+    public void setRegistered(boolean registered){
+        this.registered.setValue(registered);
     }
 
     public BooleanProperty registeredProperty() {

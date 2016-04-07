@@ -66,13 +66,16 @@
                 <Label fx:id="vcfFileLabel" layoutX="14.0" layoutY="22.0" text="vcf File:" />
                 <TextField fx:id="fileField" layoutX="69.0" layoutY="19.0" prefWidth="446.0" />
                 <Button fx:id="openBtn" layoutX="530.0" layoutY="20.0" mnemonicParsing="false" onAction="#openFile" text="Open..." />
-                <TableView fx:id="tableView" layoutX="16.0" layoutY="118.0" prefHeight="226.0" prefWidth="571.0">
+                <TableView fx:id="tableView" editable="true" layoutX="14.0" layoutY="59.0" prefHeight="226.0" prefWidth="571.0">
                   <columns>
-                    <TableColumn prefWidth="40.0" text="Active" fx:id="activeColumn" />
-                    <TableColumn editable="false" prefWidth="280.0" resizable="false" text="Name" fx:id="namColumn" />
-                    <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="217.0" resizable="false" text="Numbers" fx:id="NumberColumn" />
+                    <TableColumn editable="true" prefWidth="40.0" text="Active" fx:id="activeColumn" />
+                    <TableColumn editable="true" onEditCommit="#editName" prefWidth="280.0" resizable="false" text="Name" fx:id="namColumn" />
+                    <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" onEditCommit="#editNumber" prefWidth="217.0" resizable="false" text="Numbers" fx:id="NumberColumn" />
                   </columns>
                 </TableView>
+                <Button fx:id="addBtn" layoutX="14.0" layoutY="303.0" mnemonicParsing="false" onAction="#addContact" text="Add..." />
+                <Button fx:id="deleteBtn" layoutX="81.0" layoutY="303.0" mnemonicParsing="false" onAction="#deleteContact" text="Delete" />
+                <Button fx:id="saveBtn" disable="true" layoutX="540.0" layoutY="303.0" mnemonicParsing="false" onAction="#saveFile" text="Save" />
               </children>
             </AnchorPane>
           </content>
@@ -98,6 +101,6 @@
         </Tab>
       </tabs>
     </TabPane>
-    <Button fx:id="saveAsBtn" layoutX="481.0" layoutY="415.0" mnemonicParsing="false" onAction="#saveAs" text="Save As .csv" />
+    <Button fx:id="saveAsBtn" layoutX="503.0" layoutY="389.0" mnemonicParsing="false" onAction="#saveAs" text="Save As .csv" />
   </children>
 </AnchorPane>

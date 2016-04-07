@@ -1,5 +1,6 @@
 package FILE;
 
+import CONTACT.Contact;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.property.Address;
@@ -27,10 +28,10 @@ public class readFile {
      * contacts file. Trough the getter, we have access
      * trough other classes.
      */
-    private static List[][] contactsFormattedList = null;
-    private static String[][] contactsFormatted = null;
 
-    public static boolean readVCF(File file){
+    private static Contact[] contacts = {};
+
+    public static Contact[] readVCF(File file){
 
         try {
 
@@ -41,18 +42,10 @@ public class readFile {
              * be saved in a list.
              */
             List<VCard> vCard = Ezvcard.parse(br).all();
-
-            /**
-             * Informations form these vCards will be divided in the singular informations
-             * in the contactsFormatted array (like name) and the plural informations
-             * in the contactsFormattedList array (like numbers, addresses, etc.).
-             */
-            contactsFormattedList = new List[5][vCard.size()];
-            contactsFormatted = new String[2][vCard.size()];
-
-            int j = 0;
+            contacts = new Contact[vCard.size()];
 
             for(int i = 0; i < vCard.size(); i++){
+
                 try {
                     String fullName = vCard.get(i).getFormattedName().getValue();
                     String lastName = vCard.get(i).getStructuredName().getFamily();
@@ -63,39 +56,40 @@ public class readFile {
                     /**
                      * Save each information in a specific array.
                      */
-                    contactsFormatted[0][j] = fullName;
-                    contactsFormatted[1][j] = lastName;
-                    contactsFormattedList[0][j] = address;
-                    contactsFormattedList[1][j] = numbers;
-                    contactsFormattedList[2][j] = mails;
 
-                    numbers.get(0).getText();
-                    j++;
+                    contacts[i] = new Contact(fullName, lastName, address, numbers, mails);
                 } catch(NullPointerException npe){
-
+                    npe.printStackTrace();
                 } catch (IndexOutOfBoundsException ioobe){
-                    j--;
+                    ioobe.printStackTrace();
                 }
             }
-            return true;
+            return contacts;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return contacts;
     }
 
-    /**
-     * Getter for the arrays, with the vCard informations
-     * @return
-     */
-    public static List[][] getContactsFormattedList() {
-        return contactsFormattedList;
+    public static Contact[] getContacts(){
+        return contacts;
     }
 
-    public static String[][] getContactsFormatted() {
-        return contactsFormatted;
+    public static String getExtension(File file){
+        String url = file.getAbsolutePath();
+
+        String tmp = url.substring(url.length() - 5, url.length());
+        String extension = "";
+
+        for(int i = 0; i < tmp.length(); i++){
+            if(tmp.charAt(i) == '.'){
+                extension = tmp.substring(i, tmp.length());
+            }
+        }
+
+        return extension;
     }
 }

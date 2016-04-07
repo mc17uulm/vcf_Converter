@@ -15,8 +15,12 @@ import java.net.URL;
 
 public class Main extends Application {
 
+    public static Stage primaryStage;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
+        this.primaryStage = primaryStage;
+
         Parent root = FXMLLoader.load(getClass().getResource("design.fxml"));
         try {
             primaryStage.getIcons().add(new Image("file:lib/icon.png"));
@@ -38,8 +42,6 @@ public class Main extends Application {
                 });
             }
         });
-        Log.initalize();
-        Log.writeLog("Program started!");
     }
 
 
