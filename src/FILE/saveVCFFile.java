@@ -1,6 +1,7 @@
 package FILE;
 
 import CONTACT.Contact;
+import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.VCardVersion;
 import ezvcard.io.text.VCardWriter;
@@ -9,75 +10,46 @@ import ezvcard.property.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * Created by Marco on 19.03.2016.
  */
 public class saveVCFFile {
 
-    public static void saveFile(File savedFile, Contact[] contacts){
+    public static void saveFile(File savedFile, List<Contact> phoneBook){
 
 
-        List<VCard> vCards = null;
-        System.out.println(Arrays.toString(contacts));
+        Collection<VCard> vCards = new LinkedList<>();
 
-        for(int i = 0; i < contacts.length; i++){
+        for(int i = 0; i < phoneBook.size(); i++){
             try {
                 VCard tmp = new VCard();
-                FormattedName name = null;
-                Address address = null;
-                Email email = null;
-                Telephone telephone = null;
+                FormattedName fullName = new FormattedName(phoneBook.get(i).getFullName());
+                Address address = new Address();
+                Email email = new Email(phoneBook.get(i).getEmail(0));
+                Telephone telephone = new Telephone(phoneBook.get(i).getTelephoneNumber(0));
                 try {
-                    name.setValue(contacts[i].getFullName());
+                    address.setStreetAddress(phoneBook.get(i).getAddress(0));
                 } catch (NullPointerException e){
                     e.printStackTrace();
                 }
-                try {
-                    address.setStreetAddress(contacts[i].getAddress(0));
-                } catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-                try {
-                    email.setValue(contacts[i].getEmail(0));
-                } catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-                try {
-                    telephone.setText(contacts[i].getTelephoneNumber(0));
-                } catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-                tmp.addFormattedName(name);
+                tmp.addFormattedName(fullName);
                 tmp.addAddress(address);
                 tmp.addEmail(email);
                 tmp.addTelephoneNumber(telephone);
 
                 vCards.add(tmp);
-                System.out.println(i);
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
         }
 
-        VCardWriter writer = null;
-        /**
         try {
-            writer = new VCardWriter(savedFile, VCardVersion.V4_0);
-            for(VCard vcard : vCards){
-                vcard.write();
-            }
+            Ezvcard.write(vCards).go(savedFile);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                writer.close();
-            } catch (IOException e){
-
-            }
-        }*/
+        }
     }
 }

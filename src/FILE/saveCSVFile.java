@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Marco on 19.09.2015.
@@ -39,7 +40,7 @@ public class saveCSVFile {
      * should be written.
      * @param savedFile
      */
-    public static void saveFile(File savedFile, Contact[] contacts){
+    public static void saveFile(File savedFile, List<Contact> phoneBook){
 
         successfullWritten = true;
         FileWriter fileWriter = null;
@@ -74,25 +75,25 @@ public class saveCSVFile {
              * with the informations: id, name and telephone number
              */
 
-            for(int i = 0; i < contacts.length; i++){
-                if(contacts[i].equals(null)){
+            for(int i = 0; i < phoneBook.size(); i++){
+                if(phoneBook.get(i).equals(null)){
 
                 } else{
                     fileWriter.append(String.valueOf(i+1));
                     fileWriter.append(COMMA_DELIMITER);
 
                     if(Controller.getOptions()[0]) {
-                        fileWriter.append(contacts[i].getFullName());
-                        System.out.println(contacts[i].getFullName());
+                        fileWriter.append(phoneBook.get(i).getFullName());
+                        System.out.println(phoneBook.get(i).getFullName());
                         fileWriter.append(COMMA_DELIMITER);
                     }
 
                     if(Controller.getOptions()[2]){
                         try {
-                            if(contacts[i].getEmail(0).equals(null)){
+                            if(phoneBook.get(i).getEmail(0).equals(null)){
                                 fileWriter.append(COMMA_DELIMITER);
                             } else {
-                                fileWriter.append(contacts[i].getEmail(0));
+                                fileWriter.append(phoneBook.get(i).getEmail(0));
                                 fileWriter.append(COMMA_DELIMITER);
                             }
                         } catch (IndexOutOfBoundsException we){
@@ -102,10 +103,10 @@ public class saveCSVFile {
 
                     if(Controller.getOptions()[3]) {
                         try {
-                            if (contacts[i].getAddress(0).equals(null)) {
+                            if (phoneBook.get(i).getAddress(0).equals(null)) {
                                 fileWriter.append(COMMA_DELIMITER);
                             } else {
-                                fileWriter.append(contacts[i].getAddress(0));
+                                fileWriter.append(phoneBook.get(i).getAddress(0));
                                 fileWriter.append(COMMA_DELIMITER);
                             }
                         } catch (IndexOutOfBoundsException io) {
@@ -114,8 +115,8 @@ public class saveCSVFile {
                     }
 
                     if(Controller.getOptions()[1]) {
-                        for (int k = 0; k < contacts[i].getTelephoneList().size(); k++) {
-                            fileWriter.append(contacts[i].getTelephoneNumber(k));
+                        for (int k = 0; k < phoneBook.get(i).getTelephoneList().size(); k++) {
+                            fileWriter.append(phoneBook.get(i).getTelephoneNumber(k));
                             fileWriter.append(COMMA_DELIMITER);
                         }
                         fileWriter.append(NEW_LINE_SEPERATOR);

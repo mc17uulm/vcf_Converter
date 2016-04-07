@@ -9,6 +9,7 @@ import ezvcard.property.Telephone;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,9 +30,11 @@ public class readFile {
      * trough other classes.
      */
 
+    private static List<Contact> phoneBook = new LinkedList<>();
+
     private static Contact[] contacts = {};
 
-    public static Contact[] readVCF(File file){
+    public static List<Contact> readVCF(File file){
 
         try {
 
@@ -47,31 +50,43 @@ public class readFile {
             for(int i = 0; i < vCard.size(); i++){
 
                 try {
-                    String fullName = vCard.get(i).getFormattedName().getValue();
-                    String lastName = vCard.get(i).getStructuredName().getFamily();
-                    List<Address> address = vCard.get(i).getAddresses();
-                    List<Telephone> numbers = vCard.get(i).getTelephoneNumbers();
-                    List<Email> mails = vCard.get(i).getEmails();
+                    String fullName = "";
+                    List<Address> address = new LinkedList<>();
+                    List<Telephone> numbers = new LinkedList<>();
+                    List<Email> mails = new LinkedList<>();
+                    try {
+                        fullName = vCard.get(i).getFormattedName().getValue();
+                    } catch (NullPointerException e){}
+                    try {
+                        address = vCard.get(i).getAddresses();
+                    } catch (NullPointerException e){}
+                    try {
+                        numbers = vCard.get(i).getTelephoneNumbers();
+                    } catch (NullPointerException e){}
+                    try {
+                        mails = vCard.get(i).getEmails();
+                    } catch (NullPointerException e){}
 
                     /**
                      * Save each information in a specific array.
                      */
 
-                    contacts[i] = new Contact(fullName, lastName, address, numbers, mails);
+                    phoneBook.add(new Contact(fullName, address, numbers, mails));
+                    contacts[i] = new Contact(fullName, address, numbers, mails);
                 } catch(NullPointerException npe){
                     npe.printStackTrace();
                 } catch (IndexOutOfBoundsException ioobe){
                     ioobe.printStackTrace();
                 }
             }
-            return contacts;
+            return phoneBook;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return contacts;
+        return phoneBook;
     }
 
     public static Contact[] getContacts(){

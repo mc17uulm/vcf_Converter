@@ -12,14 +12,12 @@ import java.util.List;
 public class Contact {
 
     private String fullName;
-    private String lastName;
     private List<Address> addressList;
     private List<Telephone> telephoneList;
     private List<Email> emailList;
 
-    public Contact(String fullName, String lastName, List<Address> addressList, List<Telephone> telephoneList, List<Email> emailList){
+    public Contact(String fullName, List<Address> addressList, List<Telephone> telephoneList, List<Email> emailList){
         this.fullName = fullName;
-        this.lastName = lastName;
         this.addressList = addressList;
         this.telephoneList = telephoneList;
         this.emailList = emailList;
@@ -27,21 +25,22 @@ public class Contact {
 
     @Override
     public String toString() {
-        return "Contact{" +
-                "fullName='" + fullName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", addressList=" + addressList +
-                ", telephoneList=" + telephoneList +
-                ", emailList=" + emailList +
-                '}';
+        String out = "Name: " + fullName;
+
+        if(!telephoneList.isEmpty()){
+            out += "\r\nTelephone Number: " + telephoneList.get(0).toString();
+        }
+        if(!emailList.isEmpty()){
+            out += "\r\nEmail: " + emailList.get(0).toString();
+        }
+        if(!addressList.isEmpty()){
+            out += "\r\nAddress: " + addressList.get(0).toString();
+        }
+        return out;
     }
 
     public String getFullName(){
         return fullName;
-    }
-
-    public  String getLastName(){
-        return lastName;
     }
 
     public List<Address> getAddressList(){
@@ -82,10 +81,6 @@ public class Contact {
 
     public void changeFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public void changeLastName(String lastName){
-        this.lastName = lastName;
     }
 
     public void changeAddress(String address, int index){

@@ -1,7 +1,10 @@
 package GUI;
 
 import CONTACT.Contact;
+import ezvcard.property.Address;
+import ezvcard.property.Email;
 import ezvcard.property.Telephone;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,36 +12,44 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.*;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.awt.Dialog;
 import java.awt.print.Book;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.SyncFailedException;
+import java.io.*;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import FILE.*;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import javafx.util.Pair;
 
 public class Controller implements Initializable{
 
@@ -79,7 +90,7 @@ public class Controller implements Initializable{
     private Desktop desktop = Desktop.getDesktop();
     private File inputFile;
     private static boolean[] options = new boolean[4];
-    private static Contact[] contacts = {};
+    private static List<Contact> phoneBook = new LinkedList<>();
 
     /**
      * 0 = English
@@ -182,7 +193,7 @@ public class Controller implements Initializable{
              * and save them in different arrays.
              */
             if(extension.equals(".vcf")) {
-                contacts = readFile.readVCF(inputFile);
+                phoneBook = readFile.readVCF(inputFile);
             } else if(extension.equals(".csv")){
 
             }
@@ -193,55 +204,56 @@ public class Controller implements Initializable{
              */
             currentList.removeAll(currentList);
 
+            refresh();
+        }
+    }
+
+    public void refresh(){
+        for(int i = 0; i < phoneBook.size(); i++){
+
             /**
-             * With this loop we work trough the contacts
+             * Because there could be empty or damaged contacts, so
+             * we just use the try-catch-block
              */
-            for(int i = 0; i < contacts.length; i++){
+            try {
 
                 /**
-                 * Because there could be empty or damaged contacts, so
-                 * we just use the try-catch-block
+                 * To the obserable list, which is used to display the table,
+                 * we add each contact.
+                 *
+                 * First we get the name of the contact from the contactsFirst array
+                 * Then we get the numbers list from the numbers array, and get just
+                 * the first number (just to display, in the converted file, there will
+                 * be all numbers.
                  */
-                try {
-
-                    /**
-                     * To the obserable list, which is used to display the table,
-                     * we add each contact.
-                     *
-                     * First we get the name of the contact from the contactsFirst array
-                     * Then we get the numbers list from the numbers array, and get just
-                     * the first number (just to display, in the converted file, there will
-                     * be all numbers.
-                     */
-                    currentList.add(new Record(contacts[i].getFullName(), contacts[i].getTelephoneNumber(0), true));
+                currentList.add(new Record(phoneBook.get(i).getFullName(), phoneBook.get(i).getTelephoneNumber(0), true));
 
 
-                } catch (IndexOutOfBoundsException ioobe){
+            } catch (IndexOutOfBoundsException ioobe){
 
-                } catch (NullPointerException npe){
+            } catch (NullPointerException npe){
 
-                }
             }
-
-            /**
-             * This is used to get the columns and to add them the right list.
-             */
-            namColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldName"));
-            namColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-            NumberColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldNumber"));
-            activeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Record, Boolean>, ObservableValue<Boolean>>() {
-                @Override
-                public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Record, Boolean> param) {
-                    return param.getValue().registeredProperty();
-                }
-            });
-            activeColumn.setCellFactory(CheckBoxTableCell.forTableColumn(activeColumn));
-
-            /**
-             * The observable list is added to the table
-             */
-            tableView.setItems(currentList);
         }
+
+        /**
+         * This is used to get the columns and to add them the right list.
+         */
+        namColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldName"));
+        namColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        NumberColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldNumber"));
+        activeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Record, Boolean>, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Record, Boolean> param) {
+                return param.getValue().registeredProperty();
+            }
+        });
+        activeColumn.setCellFactory(CheckBoxTableCell.forTableColumn(activeColumn));
+
+        /**
+         * The observable list is added to the table
+         */
+        tableView.setItems(currentList);
     }
 
     public void saveAs(ActionEvent actionEvent) {
@@ -305,7 +317,7 @@ public class Controller implements Initializable{
         );
 
         File savedFile = saveOpt.showSaveDialog(saveAsBtn.getScene().getWindow());
-        saveCSVFile.saveFile(savedFile, contacts);
+        saveCSVFile.saveFile(savedFile, phoneBook);
     }
 
     public void saveDirect(){
@@ -406,29 +418,147 @@ public class Controller implements Initializable{
     }
 
     public void addContact(ActionEvent actionEvent) {
+        saveBtn.setDisable(false);
+        Dialog dialog = new Dialog();
+        dialog.setTitle("Add Contact...");
+        dialog.setHeaderText("Insert your informations");
 
+        dialog.setGraphic(new ImageView("file:lib/icon.png"));
+
+        ButtonType addButton = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField name = new TextField();
+        name.setPromptText("Name");
+        TextField number = new TextField();
+        number.setPromptText("Telephonenumber");
+        TextField mail = new TextField();
+        mail.setPromptText("Email Adress");
+        TextArea address = new TextArea();
+
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(name, 1, 0);
+        grid.add(new Label("Number:"), 0, 1);
+        grid.add(number, 1, 1);
+        grid.add(new Label("E-Mail:"), 0, 2);
+        grid.add(mail, 1, 2);
+        grid.add(new Label("Address:"), 0, 3);
+        grid.add(address, 1, 3);
+
+        boolean[] filledOut = {false, false};
+
+        Node loginButton = dialog.getDialogPane().lookupButton(addButton);
+        loginButton.setDisable(true);
+
+        name.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if(name.getText().isEmpty()){
+                    grid.add(new ImageView("file:lib/error.png"), 2, 0);
+                    loginButton.setDisable(true);
+                    filledOut[0] = false;
+                } else{
+                    grid.add(new ImageView("file:lib/success.png"), 2, 0);
+                    filledOut[0] = true;
+                    if(filledOut[0] && filledOut[1]){
+                        loginButton.setDisable(false);
+                    }
+                }
+            }
+        });
+
+        String regex = "\\d+";
+        number.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if(number.getText().isEmpty() || !(number.getText().matches(regex))){
+                    grid.add(new ImageView("file:lib/error.png"), 2, 1);
+                    loginButton.setDisable(true);
+                    filledOut[1] = false;
+                } else{
+                    grid.add(new ImageView("file:lib/success.png"), 2, 1);
+                    filledOut[1] = true;
+                    if(filledOut[0] && filledOut[1]){
+                        loginButton.setDisable(false);
+                    }
+                }
+            }
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if(dialogButton == addButton){
+                List<Address> addresses = new LinkedList<Address>();
+                Address address1 = new Address();
+                List<Email> emails = new LinkedList<Email>();
+                List<Telephone> telephones = new LinkedList<Telephone>();
+                address1.setStreetAddress(address.getText());
+                addresses.add(address1);
+                emails.add(new Email(mail.getText()));
+                telephones.add(new Telephone(number.getText()));
+
+                phoneBook.add(new Contact(name.getText(), addresses, telephones, emails));
+                refresh();
+            }
+            return null;
+        });
+
+        Optional result = dialog.showAndWait();
     }
 
     public void deleteContact(ActionEvent actionEvent) {
+        saveBtn.setDisable(false);
+        int position = tableView.getSelectionModel().getSelectedCells().get(0).getRow();
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Do you really want to delete this contact:");
 
+        Label label = new Label("Information:");
+        TextArea textArea = new TextArea(phoneBook.get(position).toString());
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        alert.getDialogPane().setExpandableContent(expContent);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            phoneBook.remove(position);
+            refresh();
+        }
     }
 
     public void editName(TableColumn.CellEditEvent<Record, String> stCellEditEvent) {
         saveBtn.setDisable(false);
         ((Record) stCellEditEvent.getTableView().getItems().get(stCellEditEvent.getTablePosition().getRow())).setFieldName(stCellEditEvent.getNewValue());
-        contacts[stCellEditEvent.getTablePosition().getRow()].changeFullName(stCellEditEvent.getNewValue());
+        phoneBook.get(stCellEditEvent.getTablePosition().getRow()).changeFullName(stCellEditEvent.getNewValue());
         System.out.println("Value After: " + stCellEditEvent.getNewValue());
     }
 
     public void editNumber(TableColumn.CellEditEvent<Record, String> stCellEditEvent) {
         saveBtn.setDisable(false);
         ((Record) stCellEditEvent.getTableView().getItems().get(stCellEditEvent.getTablePosition().getRow())).setFieldName(stCellEditEvent.getNewValue());
-        contacts[stCellEditEvent.getTablePosition().getRow()].changeTelephoneNumber(stCellEditEvent.getNewValue(), 0);
+        phoneBook.get(stCellEditEvent.getTablePosition().getRow()).changeTelephoneNumber(stCellEditEvent.getNewValue(), 0);
         System.out.println("Value After: " + stCellEditEvent.getNewValue());
     }
 
     public void saveFile(ActionEvent actionEvent) {
-        saveVCFFile.saveFile(inputFile, contacts);
+        saveVCFFile.saveFile(inputFile, phoneBook);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image("file:lib/icon.png"));
         if (Controller.getLanguage() == 0) {
