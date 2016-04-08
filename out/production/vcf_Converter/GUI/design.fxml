@@ -68,11 +68,10 @@
                 <Button fx:id="openBtn" layoutX="829.0" layoutY="20.0" mnemonicParsing="false" onAction="#openFile" text="Open..." />
                 <TableView fx:id="tableView" editable="true" layoutX="14.0" layoutY="59.0" prefHeight="424.0" prefWidth="872.0">
                   <columns>
-                    <TableColumn editable="true" prefWidth="40.0" text="Active" fx:id="activeColumn" />
                     <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" onEditCommit="#editName" prefWidth="263.0" resizable="false" text="Name" fx:id="namColumn" />
                     <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" onEditCommit="#editNumber" prefWidth="217.0" resizable="false" text="Numbers" fx:id="NumberColumn" />
                     <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="178.0" resizable="false" text="E-Mail" fx:id="mailColumn" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="175.0" resizable="false" text="Address" fx:id="adressColumn" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="211.0" resizable="false" text="Address" fx:id="adressColumn" />
                   </columns>
                 </TableView>
                 <Button fx:id="addBtn" layoutX="19.0" layoutY="502.0" mnemonicParsing="false" onAction="#addContact" text="Add..." />
@@ -83,7 +82,7 @@
             </AnchorPane>
           </content>
         </Tab>
-        <Tab fx:id="OptionsTab" disable="false" text="Options">
+        <Tab fx:id="OptionsTab" disable="true" text="Options">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>

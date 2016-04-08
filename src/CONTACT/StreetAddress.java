@@ -11,6 +11,11 @@ public class StreetAddress {
         this.address = address;
     }
 
+    @Override
+    public String toString(){
+        return address;
+    }
+
     public String getAddress() {
         return address;
     }

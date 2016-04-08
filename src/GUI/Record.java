@@ -1,54 +1,51 @@
 package GUI;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 /**
  * Created by Marco on 19.09.2015.
  * This class is just for displaying the contact
- * informations on the guy
+ * informations on the gui
  */
 public class Record{
 
-    /**
-     * The two parameters which will displayed at the gui table
-     */
+    private SimpleIntegerProperty fieldId;
     private SimpleStringProperty fieldName;
     private SimpleObjectProperty fieldNumber;
     private SimpleStringProperty fieldMail;
     private SimpleStringProperty fieldAddress;
-    private BooleanProperty registered;
 
-    /**
-     * Constructor, which defines the name and the number
-     * @param fName
-     * @param fNumber
-     * @param registered
-     */
-    public Record(String fName, Object fNumber, String fMail, String fAddress, boolean registered){
+    public Record(int fId, String fName, Object fNumber, String fMail, String fAddress){
+        this.fieldId = new SimpleIntegerProperty(fId);
         this.fieldName = new SimpleStringProperty(fName);
         this.fieldNumber = new SimpleObjectProperty<>(fNumber);
         this.fieldMail = new SimpleStringProperty(fMail);
         this.fieldAddress = new SimpleStringProperty(fAddress);
-        this.registered = new SimpleBooleanProperty(registered);
     }
 
-    /**
-     * Standart toString method. Not used in the program.
-     * @return String
-     */
     @Override
     public String toString() {
         return "Record{" +
                 "fieldName=" + fieldName +
                 ", fieldNumber=" + fieldNumber +
+                ", fieldID=" + fieldId +
                 '}';
     }
+
+    public String getInformations(){
+        return "Name: " + fieldName.get() +
+                " | Number: " + fieldNumber.get() + "\r\n";
+    }
+
+    public int getID(){ return fieldId.get(); }
+
+    public void setFieldId(int fieldId) { this.fieldId.set(fieldId);}
+
+    public SimpleIntegerProperty getFieldIdProperty() { return fieldId; }
 
     public String getFieldName() {
         return fieldName.get();
@@ -82,16 +79,4 @@ public class Record{
     public void setFieldAddress(String fieldAddress) { this.fieldAddress.set(fieldAddress); }
 
     public SimpleStringProperty getFieldAddressProperty() { return fieldAddress; }
-
-    public boolean getRegistered() {
-        return registered.get();
-    }
-
-    public void setRegistered(boolean registered){
-        this.registered.setValue(registered);
-    }
-
-    public BooleanProperty registeredProperty() {
-        return registered;
-    }
 }

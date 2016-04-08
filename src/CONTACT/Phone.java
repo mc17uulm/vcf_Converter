@@ -11,6 +11,11 @@ public class Phone {
         this.number = number;
     }
 
+    @Override
+    public String toString() {
+        return number;
+    }
+
     public String getNumber() {
         return number;
     }

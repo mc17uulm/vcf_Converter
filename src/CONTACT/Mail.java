@@ -11,6 +11,11 @@ public class Mail {
         this.address = address;
     }
 
+    @Override
+    public String toString(){
+        return address;
+    }
+
     public String getAddress() {
         return address;
     }

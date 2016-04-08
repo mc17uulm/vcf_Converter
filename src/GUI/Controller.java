@@ -77,7 +77,6 @@ public class Controller implements Initializable{
     @FXML private Tab vcfTab;
     @FXML private Tab OptionsTab;
     @FXML private MenuItem aboutMenu;
-    @FXML private TableColumn activeColumn;
     @FXML private MenuItem openMenu;
     @FXML private MenuItem saveMenu;
     @FXML private MenuItem saveAsMenu;
@@ -245,7 +244,7 @@ public class Controller implements Initializable{
                  */
                 Contact current = phoneBook.get(i);
 
-                currentList.add(new Record(current.getFullName(), current.getTelephoneNumber(0), current.getEmail(0), current.getAddress(0), true));
+                currentList.add(new Record(i, current.getFullName(), current.getTelephoneNumber(0), current.getEmail(0), current.getAddress(0)));
 
 
             } catch (IndexOutOfBoundsException ioobe){
@@ -263,17 +262,11 @@ public class Controller implements Initializable{
         NumberColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldNumber"));
         mailColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldMail"));
         adressColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldAddress"));
-        activeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Record, Boolean>, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Record, Boolean> param) {
-                return param.getValue().registeredProperty();
-            }
-        });
-        activeColumn.setCellFactory(CheckBoxTableCell.forTableColumn(activeColumn));
 
         /**
          * The observable list is added to the table
          */
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tableView.setItems(currentList);
     }
 
@@ -362,7 +355,6 @@ public class Controller implements Initializable{
         germanToggle.setText("German");
         vcfFileLabel.setText(".vcf File:");
         NumberColumn.setText("Number");
-        activeColumn.setText("Active");
         vcfTab.setText("vcf to csv");
         OptionsTab.setText("Options");
         informationField.setText("Informationes:");
@@ -391,7 +383,6 @@ public class Controller implements Initializable{
         germanToggle.setText("Deutsch");
         vcfFileLabel.setText(".vcf Datei:");
         NumberColumn.setText("Nummer");
-        activeColumn.setText("Auswahl");
         vcfTab.setText("vcf zu csv");
         OptionsTab.setText("Einstellungen");
         informationField.setText("Informationen:");
@@ -539,11 +530,33 @@ public class Controller implements Initializable{
         Optional result = dialog.showAndWait();
     }
 
+    /**
+     * This method deletes a contact from the phoneBook and the table. But the contact
+     * stays in the file. After the file is saved, the changes are saved too.
+     * @param actionEvent
+     */
     public void deleteContact(ActionEvent actionEvent) {
+
+        /**
+         * Because the changes are only in the system and not in the actual opened file,
+         * the save Button gets enabled, so the user can save the file. Also the changes
+         * boolean is set to true. If the user wants to close the program and there are
+         * unsaved changes, the system will generate an alert to warn the user.
+         */
         saveBtn.setDisable(false);
         changes = true;
-        int position = tableView.getSelectionModel().getSelectedCells().get(0).getRow();
+
+        /**
+         * In this observable List we save the selected rows, which should be deleted
+         */
+        ObservableList<Record> selection = tableView.getSelectionModel().getSelectedItems();
+
         Alert alert = new Alert(Alert.AlertType.WARNING);
+
+        ButtonType yes = new ButtonType("Yes");
+        ButtonType no = new ButtonType("No");
+
+        alert.getButtonTypes().setAll(yes, no);
 
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image("file:lib/icon.png"));
@@ -552,7 +565,15 @@ public class Controller implements Initializable{
         alert.setHeaderText("Do you really want to delete this contact:");
 
         Label label = new Label("Information:");
-        TextArea textArea = new TextArea(phoneBook.get(position).toString());
+        String info = "";
+
+        /**
+         * Here we generated the informations for the contact which should be deleted.
+         */
+        for(int i = 0; i < selection.size(); i++){
+            info += selection.get(i).getInformations();
+        }
+        TextArea textArea = new TextArea(info);
         textArea.setEditable(false);
         textArea.setWrapText(true);
 
@@ -561,17 +582,33 @@ public class Controller implements Initializable{
         GridPane.setVgrow(textArea, Priority.ALWAYS);
         GridPane.setHgrow(textArea, Priority.ALWAYS);
 
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
+        GridPane pane = new GridPane();
+        pane.setMaxWidth(Double.MAX_VALUE);
+        pane.add(label, 0, 0);
+        pane.add(textArea, 0, 1);
 
-        alert.getDialogPane().setExpandableContent(expContent);
+        alert.getDialogPane().setExpandableContent(pane);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            phoneBook.remove(position);
+
+        /**
+         * If the user had choosen between deleting the contacts or cancel
+         * the action, both times the table gets refreshed.
+         */
+        if (result.get() == yes) {
+
+            /**
+             * We go trough each selected contact (from back to start, because the phonebook
+             * is implemented as a LinkedList.) and deleted the contact from the phonebook list.
+             */
+            for(int i = selection.size()-1; i >= 0; i--) {
+                phoneBook.remove(selection.get(i).getID());
+            }
             refresh();
+
+        } else{
+            refresh();
+            alert.close();
         }
     }
 

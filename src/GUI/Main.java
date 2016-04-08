@@ -14,11 +14,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.net.URL;
-import java.util.Optional;
-
-import static com.sun.xml.internal.ws.policy.sourcemodel.wspolicy.XmlToken.Optional;
-
 public class Main extends Application {
 
     public static Stage primaryStage;
@@ -42,7 +37,8 @@ public class Main extends Application {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        if(Controller.getChanged()){
+                        if(/**Controller.getChanged()*/false){
+                            primaryStage.show();
                             Alert alert = new Alert(Alert.AlertType.WARNING);
                             alert.setTitle("Unsaved Changes");
                             alert.setHeaderText("Will you save your changes before closing?");
@@ -56,13 +52,13 @@ public class Main extends Application {
                             java.util.Optional<ButtonType> result = alert.showAndWait();
                             if(result.get() == yes){
                                 saveVCFFile.saveFile(Controller.getFile(), Controller.getPhoneBook());
+                                primaryStage.hide();
                                 Log.closeLog();
                                 System.exit(0);
-                            } else if(result.get() == no){
+                            } else if(result.get() == no) {
+                                primaryStage.hide();
                                 Log.closeLog();
                                 System.exit(0);
-                            } else{
-                                primaryStage.show();
                             }
                         } else{
                             Log.closeLog();
