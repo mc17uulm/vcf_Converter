@@ -1,17 +1,23 @@
 package GUI;
 
 import FILE.Log;
+import FILE.saveVCFFile;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.net.URL;
+import java.util.Optional;
+
+import static com.sun.xml.internal.ws.policy.sourcemodel.wspolicy.XmlToken.Optional;
 
 public class Main extends Application {
 
@@ -28,7 +34,7 @@ public class Main extends Application {
             iae.printStackTrace();
         }
         primaryStage.setTitle("VCF Converter 0.1");
-        primaryStage.setScene(new Scene(root, 600, 450));
+        primaryStage.setScene(new Scene(root, 900, 600));
         primaryStage.show();
         primaryStage.setOnHiding(new EventHandler<WindowEvent>() {
             @Override
@@ -36,8 +42,32 @@ public class Main extends Application {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        Log.closeLog();
-                        System.exit(0);
+                        if(Controller.getChanged()){
+                            Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setTitle("Unsaved Changes");
+                            alert.setHeaderText("Will you save your changes before closing?");
+
+                            ButtonType yes = new ButtonType("Yes");
+                            ButtonType no = new ButtonType("No");
+                            ButtonType cancel = new ButtonType("Cancel");
+
+                            alert.getButtonTypes().setAll(yes, no, cancel);
+
+                            java.util.Optional<ButtonType> result = alert.showAndWait();
+                            if(result.get() == yes){
+                                saveVCFFile.saveFile(Controller.getFile(), Controller.getPhoneBook());
+                                Log.closeLog();
+                                System.exit(0);
+                            } else if(result.get() == no){
+                                Log.closeLog();
+                                System.exit(0);
+                            } else{
+                                primaryStage.show();
+                            }
+                        } else{
+                            Log.closeLog();
+                            System.exit(0);
+                        }
                     }
                 });
             }

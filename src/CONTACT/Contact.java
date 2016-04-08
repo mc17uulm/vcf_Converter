@@ -1,9 +1,5 @@
 package CONTACT;
 
-import ezvcard.property.Address;
-import ezvcard.property.Email;
-import ezvcard.property.Telephone;
-
 import java.util.List;
 
 /**
@@ -12,11 +8,11 @@ import java.util.List;
 public class Contact {
 
     private String fullName;
-    private List<Address> addressList;
-    private List<Telephone> telephoneList;
-    private List<Email> emailList;
+    private List<StreetAddress> addressList;
+    private List<Phone> telephoneList;
+    private List<Mail> emailList;
 
-    public Contact(String fullName, List<Address> addressList, List<Telephone> telephoneList, List<Email> emailList){
+    public Contact(String fullName, List<StreetAddress> addressList, List<Phone> telephoneList, List<Mail> emailList){
         this.fullName = fullName;
         this.addressList = addressList;
         this.telephoneList = telephoneList;
@@ -31,7 +27,7 @@ public class Contact {
             out += "\r\nTelephone Number: " + telephoneList.get(0).toString();
         }
         if(!emailList.isEmpty()){
-            out += "\r\nEmail: " + emailList.get(0).toString();
+            out += "\r\nMail: " + emailList.get(0).toString();
         }
         if(!addressList.isEmpty()){
             out += "\r\nAddress: " + addressList.get(0).toString();
@@ -43,37 +39,37 @@ public class Contact {
         return fullName;
     }
 
-    public List<Address> getAddressList(){
+    public List<StreetAddress> getAddressList(){
         return addressList;
     }
 
     public String getAddress(int index){
         try {
-            return addressList.get(index).getStreetAddress();
+            return addressList.get(index).getAddress();
         } catch (IndexOutOfBoundsException e){
             return "";
         }
     }
 
-    public List<Telephone> getTelephoneList(){
+    public List<Phone> getTelephoneList(){
         return telephoneList;
     }
 
     public String getTelephoneNumber(int index){
         try {
-            return telephoneList.get(index).getText();
+            return telephoneList.get(index).getNumber();
         } catch (IndexOutOfBoundsException e){
             return "";
         }
     }
 
-    public List<Email> getEmailList(){
+    public List<Mail> getEmailList(){
         return emailList;
     }
 
     public String getEmail(int index){
         try{
-            return emailList.get(index).toString();
+            return emailList.get(index).getAddress();
         } catch (IndexOutOfBoundsException e){
             return "";
         }
@@ -84,30 +80,26 @@ public class Contact {
     }
 
     public void changeAddress(String address, int index){
-        this.addressList.get(index).setStreetAddress(address);
+        this.addressList.get(index).setAddress(address);
     }
 
     public void changeTelephoneNumber(String telephoneNumber, int index){
-        this.telephoneList.get(index).setText(telephoneNumber);
+        this.telephoneList.get(index).setNumber(telephoneNumber);
     }
 
     public void changeEmailAddress(String email, int index){
-        this.telephoneList.get(index).setText(email);
+        this.emailList.get(index).setAddress(email);
     }
 
     public void addAddress(String address){
-        Address tmp = new Address();
-        tmp.setStreetAddress(address);
-        this.addressList.add(tmp);
+        this.addressList.add(new StreetAddress(address));
     }
 
     public void addTelephoneNumber(String telephoneNumber){
-        Telephone tmp = new Telephone(telephoneNumber);
-        this.telephoneList.add(tmp);
+        this.telephoneList.add(new Phone(telephoneNumber));
     }
 
     public void addEmailAddress(String email){
-        Email tmp = new Email(email);
-        this.emailList.add(tmp);
+        this.emailList.add(new Mail(email));
     }
 }

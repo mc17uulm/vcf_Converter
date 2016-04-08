@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="GUI.Controller">
+<AnchorPane id="GridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="GUI.Controller">
   <children>
-    <MenuBar layoutX="0.0" layoutY="0.0" prefWidth="600.0">
+    <MenuBar layoutX="0.0" layoutY="0.0" prefWidth="900.0">
       <menus>
         <Menu mnemonicParsing="false" text="File" fx:id="fileMenu">
           <items>
@@ -57,32 +57,30 @@
         </Menu>
       </menus>
     </MenuBar>
-    <TabPane layoutX="0.0" layoutY="24.0" prefHeight="375.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane layoutX="0.0" layoutY="24.0" prefHeight="576.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="vcfTab" text="vcf to csv">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" visible="true">
               <children>
-                <Label fx:id="vcfFileLabel" layoutX="14.0" layoutY="22.0" text="vcf File:" />
-                <TextField fx:id="fileField" layoutX="69.0" layoutY="19.0" prefWidth="446.0" />
-                <Button fx:id="openBtn" layoutX="530.0" layoutY="20.0" mnemonicParsing="false" onAction="#openFile" text="Open..." />
-                <TableView fx:id="tableView" editable="true" layoutX="14.0" layoutY="59.0" prefHeight="226.0" prefWidth="571.0">
+                <Label fx:id="vcfFileLabel" layoutX="14.0" layoutY="22.0" text="File:" />
+                <TextField fx:id="fileField" layoutX="69.0" layoutY="19.0" prefWidth="740.0" />
+                <Button fx:id="openBtn" layoutX="829.0" layoutY="20.0" mnemonicParsing="false" onAction="#openFile" text="Open..." />
+                <TableView fx:id="tableView" editable="true" layoutX="14.0" layoutY="59.0" prefHeight="424.0" prefWidth="872.0">
                   <columns>
                     <TableColumn editable="true" prefWidth="40.0" text="Active" fx:id="activeColumn" />
-                    <TableColumn editable="true" onEditCommit="#editName" prefWidth="280.0" resizable="false" text="Name" fx:id="namColumn" />
+                    <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" onEditCommit="#editName" prefWidth="263.0" resizable="false" text="Name" fx:id="namColumn" />
                     <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" onEditCommit="#editNumber" prefWidth="217.0" resizable="false" text="Numbers" fx:id="NumberColumn" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="178.0" resizable="false" text="E-Mail" fx:id="mailColumn" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="175.0" resizable="false" text="Address" fx:id="adressColumn" />
                   </columns>
                 </TableView>
-                <Button fx:id="addBtn" layoutX="14.0" layoutY="303.0" mnemonicParsing="false" onAction="#addContact" text="Add..." />
-                <Button fx:id="deleteBtn" layoutX="81.0" layoutY="303.0" mnemonicParsing="false" onAction="#deleteContact" text="Delete" />
-                <Button fx:id="saveBtn" disable="true" layoutX="540.0" layoutY="303.0" mnemonicParsing="false" onAction="#saveFile" text="Save" />
+                <Button fx:id="addBtn" layoutX="19.0" layoutY="502.0" mnemonicParsing="false" onAction="#addContact" text="Add..." />
+                <Button fx:id="deleteBtn" layoutX="94.0" layoutY="502.0" mnemonicParsing="false" onAction="#deleteContact" text="Delete" />
+                <Button fx:id="saveBtn" disable="false" layoutX="723.0" layoutY="502.0" mnemonicParsing="false" onAction="#saveFile" text="Save" visible="true" />
+                <Button fx:id="saveAsBtn" layoutX="795.0" layoutY="502.0" mnemonicParsing="false" onAction="#saveAs" text="Save As .csv" />
               </children>
             </AnchorPane>
-          </content>
-        </Tab>
-        <Tab disable="true" text="csv to vcf">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
           </content>
         </Tab>
         <Tab fx:id="OptionsTab" disable="false" text="Options">
@@ -101,6 +99,5 @@
         </Tab>
       </tabs>
     </TabPane>
-    <Button fx:id="saveAsBtn" layoutX="503.0" layoutY="389.0" mnemonicParsing="false" onAction="#saveAs" text="Save As .csv" />
   </children>
 </AnchorPane>

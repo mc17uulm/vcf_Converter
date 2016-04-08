@@ -1,6 +1,9 @@
 package GUI;
 
 import CONTACT.Contact;
+import CONTACT.Mail;
+import CONTACT.Phone;
+import CONTACT.StreetAddress;
 import ezvcard.property.Address;
 import ezvcard.property.Email;
 import ezvcard.property.Telephone;
@@ -82,15 +85,18 @@ public class Controller implements Initializable{
     @FXML private TableView<Record> tableView = new TableView<>();
     @FXML private TableColumn namColumn;
     @FXML private TableColumn NumberColumn;
+    @FXML private TableColumn mailColumn;
+    @FXML private TableColumn adressColumn;
     @FXML private TextField fileField;
     @FXML private Button openBtn;
     @FXML private Button saveAsBtn;
 
     private static final ObservableList<Record> currentList = FXCollections.observableArrayList();
     private Desktop desktop = Desktop.getDesktop();
-    private File inputFile;
+    private static File inputFile;
     private static boolean[] options = new boolean[4];
     private static List<Contact> phoneBook = new LinkedList<>();
+    private static boolean changes = false;
 
     /**
      * 0 = English
@@ -120,6 +126,14 @@ public class Controller implements Initializable{
     public void openFile(ActionEvent actionEvent) {
         fileOpen();
     }
+
+    public static boolean getChanged(){
+        return changes;
+    }
+
+    public static File getFile(){ return inputFile; }
+
+    public static List<Contact> getPhoneBook() { return phoneBook; }
 
     public static int getLanguage() {
         return language;
@@ -198,17 +212,22 @@ public class Controller implements Initializable{
 
             }
 
-            /**
-             * We reset the currentList. Maybe the user wants to edit more files,
-             * and so the programm works clean
-             */
-            currentList.removeAll(currentList);
-
             refresh();
         }
     }
 
+    /**
+     * If there are changes in the phonebook, we refresh the javafx table
+     */
     public void refresh(){
+
+        /**
+         * We reset the currentList. Maybe the user wants to edit more files,
+         * and so the programm works clean
+         */
+
+        currentList.removeAll(currentList);
+
         for(int i = 0; i < phoneBook.size(); i++){
 
             /**
@@ -221,12 +240,12 @@ public class Controller implements Initializable{
                  * To the obserable list, which is used to display the table,
                  * we add each contact.
                  *
-                 * First we get the name of the contact from the contactsFirst array
-                 * Then we get the numbers list from the numbers array, and get just
-                 * the first number (just to display, in the converted file, there will
-                 * be all numbers.
+                 * We create an new Record from each phoneBook contact. This Records will be added to the
+                 * currentList and displayed as a table
                  */
-                currentList.add(new Record(phoneBook.get(i).getFullName(), phoneBook.get(i).getTelephoneNumber(0), true));
+                Contact current = phoneBook.get(i);
+
+                currentList.add(new Record(current.getFullName(), current.getTelephoneNumber(0), current.getEmail(0), current.getAddress(0), true));
 
 
             } catch (IndexOutOfBoundsException ioobe){
@@ -242,6 +261,8 @@ public class Controller implements Initializable{
         namColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldName"));
         namColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         NumberColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldNumber"));
+        mailColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldMail"));
+        adressColumn.setCellValueFactory(new PropertyValueFactory<Record, String>("fieldAddress"));
         activeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Record, Boolean>, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Record, Boolean> param) {
@@ -419,7 +440,12 @@ public class Controller implements Initializable{
 
     public void addContact(ActionEvent actionEvent) {
         saveBtn.setDisable(false);
+        changes = true;
         Dialog dialog = new Dialog();
+
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image("file:lib/icon.png"));
+
         dialog.setTitle("Add Contact...");
         dialog.setHeaderText("Insert your informations");
 
@@ -438,7 +464,7 @@ public class Controller implements Initializable{
         TextField number = new TextField();
         number.setPromptText("Telephonenumber");
         TextField mail = new TextField();
-        mail.setPromptText("Email Adress");
+        mail.setPromptText("Mail Adress");
         TextArea address = new TextArea();
 
         grid.add(new Label("Username:"), 0, 0);
@@ -472,7 +498,9 @@ public class Controller implements Initializable{
             }
         });
 
+        // Regular expression for detecting other characters than numbers
         String regex = "\\d+";
+
         number.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -494,14 +522,13 @@ public class Controller implements Initializable{
 
         dialog.setResultConverter(dialogButton -> {
             if(dialogButton == addButton){
-                List<Address> addresses = new LinkedList<Address>();
-                Address address1 = new Address();
-                List<Email> emails = new LinkedList<Email>();
-                List<Telephone> telephones = new LinkedList<Telephone>();
-                address1.setStreetAddress(address.getText());
+                List<StreetAddress> addresses = new LinkedList<StreetAddress>();
+                StreetAddress address1 = new StreetAddress(address.getText());
+                List<Mail> emails = new LinkedList<Mail>();
+                emails.add(new Mail(mail.getText()));
+                List<Phone> telephones = new LinkedList<Phone>();
                 addresses.add(address1);
-                emails.add(new Email(mail.getText()));
-                telephones.add(new Telephone(number.getText()));
+                telephones.add(new Phone(number.getText()));
 
                 phoneBook.add(new Contact(name.getText(), addresses, telephones, emails));
                 refresh();
@@ -514,8 +541,13 @@ public class Controller implements Initializable{
 
     public void deleteContact(ActionEvent actionEvent) {
         saveBtn.setDisable(false);
+        changes = true;
         int position = tableView.getSelectionModel().getSelectedCells().get(0).getRow();
         Alert alert = new Alert(Alert.AlertType.WARNING);
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image("file:lib/icon.png"));
+
         alert.setTitle("Delete");
         alert.setHeaderText("Do you really want to delete this contact:");
 
@@ -544,6 +576,7 @@ public class Controller implements Initializable{
     }
 
     public void editName(TableColumn.CellEditEvent<Record, String> stCellEditEvent) {
+        changes = true;
         saveBtn.setDisable(false);
         ((Record) stCellEditEvent.getTableView().getItems().get(stCellEditEvent.getTablePosition().getRow())).setFieldName(stCellEditEvent.getNewValue());
         phoneBook.get(stCellEditEvent.getTablePosition().getRow()).changeFullName(stCellEditEvent.getNewValue());
@@ -551,6 +584,7 @@ public class Controller implements Initializable{
     }
 
     public void editNumber(TableColumn.CellEditEvent<Record, String> stCellEditEvent) {
+        changes = true;
         saveBtn.setDisable(false);
         ((Record) stCellEditEvent.getTableView().getItems().get(stCellEditEvent.getTablePosition().getRow())).setFieldName(stCellEditEvent.getNewValue());
         phoneBook.get(stCellEditEvent.getTablePosition().getRow()).changeTelephoneNumber(stCellEditEvent.getNewValue(), 0);
@@ -572,5 +606,6 @@ public class Controller implements Initializable{
         }
         alert.showAndWait();
         saveBtn.setDisable(true);
+        changes = false;
     }
 }

@@ -20,6 +20,8 @@ public class Record{
      */
     private SimpleStringProperty fieldName;
     private SimpleObjectProperty fieldNumber;
+    private SimpleStringProperty fieldMail;
+    private SimpleStringProperty fieldAddress;
     private BooleanProperty registered;
 
     /**
@@ -28,9 +30,11 @@ public class Record{
      * @param fNumber
      * @param registered
      */
-    public Record(String fName, Object fNumber, boolean registered){
+    public Record(String fName, Object fNumber, String fMail, String fAddress, boolean registered){
         this.fieldName = new SimpleStringProperty(fName);
         this.fieldNumber = new SimpleObjectProperty<>(fNumber);
+        this.fieldMail = new SimpleStringProperty(fMail);
+        this.fieldAddress = new SimpleStringProperty(fAddress);
         this.registered = new SimpleBooleanProperty(registered);
     }
 
@@ -66,6 +70,18 @@ public class Record{
     }
 
     public SimpleObjectProperty getFieldNumberProperty(){ return fieldNumber; }
+
+    public String getFieldMail(){ return fieldMail.get(); }
+
+    public void setFieldMail(String fieldMail){ this.fieldMail.set(fieldMail); }
+
+    public SimpleStringProperty getFieldMailProperty() { return  fieldMail; }
+
+    public String getFieldAddress() { return fieldAddress.get(); }
+
+    public void setFieldAddress(String fieldAddress) { this.fieldAddress.set(fieldAddress); }
+
+    public SimpleStringProperty getFieldAddressProperty() { return fieldAddress; }
 
     public boolean getRegistered() {
         return registered.get();

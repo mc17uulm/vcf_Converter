@@ -1,14 +1,16 @@
 package FILE;
 
 import CONTACT.Contact;
+import CONTACT.Mail;
+import CONTACT.Phone;
+import CONTACT.StreetAddress;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
-import ezvcard.property.Address;
 import ezvcard.property.Email;
+import ezvcard.property.Address;
 import ezvcard.property.Telephone;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,8 +34,6 @@ public class readFile {
 
     private static List<Contact> phoneBook = new LinkedList<>();
 
-    private static Contact[] contacts = {};
-
     public static List<Contact> readVCF(File file){
 
         try {
@@ -45,26 +45,31 @@ public class readFile {
              * be saved in a list.
              */
             List<VCard> vCard = Ezvcard.parse(br).all();
-            contacts = new Contact[vCard.size()];
 
             for(int i = 0; i < vCard.size(); i++){
 
                 try {
                     String fullName = "";
-                    List<Address> address = new LinkedList<>();
-                    List<Telephone> numbers = new LinkedList<>();
-                    List<Email> mails = new LinkedList<>();
+                    List<StreetAddress> address = new LinkedList<>();
+                    List<Phone> numbers = new LinkedList<>();
+                    List<Mail> mails = new LinkedList<>();
                     try {
                         fullName = vCard.get(i).getFormattedName().getValue();
                     } catch (NullPointerException e){}
                     try {
-                        address = vCard.get(i).getAddresses();
+                        for(Address address1 : vCard.get(i).getAddresses()){
+                            address.add(new StreetAddress(address1.getStreetAddress()));
+                        }
                     } catch (NullPointerException e){}
                     try {
-                        numbers = vCard.get(i).getTelephoneNumbers();
+                        for(Telephone telephone : vCard.get(i).getTelephoneNumbers()){
+                            numbers.add(new Phone(telephone.getText()));
+                        }
                     } catch (NullPointerException e){}
                     try {
-                        mails = vCard.get(i).getEmails();
+                        for(Email email : vCard.get(i).getEmails()){
+                            mails.add(new Mail(email.getValue()));
+                        }
                     } catch (NullPointerException e){}
 
                     /**
@@ -72,7 +77,6 @@ public class readFile {
                      */
 
                     phoneBook.add(new Contact(fullName, address, numbers, mails));
-                    contacts[i] = new Contact(fullName, address, numbers, mails);
                 } catch(NullPointerException npe){
                     npe.printStackTrace();
                 } catch (IndexOutOfBoundsException ioobe){
@@ -87,10 +91,6 @@ public class readFile {
         }
 
         return phoneBook;
-    }
-
-    public static Contact[] getContacts(){
-        return contacts;
     }
 
     public static String getExtension(File file){
